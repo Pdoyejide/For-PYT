@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For PYT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-wine:#2B0F1E;
+    --deep-plum:#3D1830;
+    --plum-soft:#4E2140;
+    --gold-dust:#E8B24D;
+    --coral-ember:#FF6B4A;
+    --cream-petal:#F7E8D9;
+    --muted-rose:#C98BA0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink-wine);
+    color:var(--cream-petal);
+    font-family:'Manrope',sans-serif;
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  ::selection{background:var(--coral-ember);color:var(--ink-wine);}
+
+  h1,h2,h3,.display{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .eyebrow{
+    font-family:'Manrope',sans-serif;
+    font-size:0.72rem;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--muted-rose);
+    font-weight:700;
+  }
+
+  /* ---------- Envelope intro ---------- */
+  #envelope{
+    position:fixed;inset:0;
+    background:var(--ink-wine);
+    display:flex;align-items:center;justify-content:center;
+    z-index:100;
+    transition:opacity 0.9s ease, visibility 0.9s ease;
+  }
+  #envelope.hidden{opacity:0;visibility:hidden;pointer-events:none;}
+  .env-box{
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+  }
+  .seal{
+    width:96px;height:96px;
+    margin:0 auto 28px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #ffcf7a, var(--coral-ember) 70%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;
+    font-size:2.1rem;
+    font-weight:600;
+    color:var(--ink-wine);
+    box-shadow:0 0 0 6px rgba(232,178,77,0.15), 0 20px 40px rgba(0,0,0,0.4);
+    animation:seal-breathe 3s ease-in-out infinite;
+  }
+  @keyframes seal-breathe{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.05);}
+  }
+  .env-box p.envelope-label{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-size:1.15rem;
+    color:var(--cream-petal);
+    margin-bottom:6px;
+  }
+  .env-box p.envelope-sub{
+    font-size:0.85rem;
+    color:var(--muted-rose);
+  }
+
+  /* ---------- Layout ---------- */
+  section{
+    padding:120px 24px;
+    max-width:640px;
+    margin:0 auto;
+    position:relative;
+  }
+  .thread-svg{
+    position:absolute;
+    left:50%;
+    top:-40px;
+    transform:translateX(-50%);
+    width:2px;
+    height:80px;
+    z-index:0;
+  }
+
+  /* ---------- Hero ---------- */
+  #hero{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding-top:80px;
+  }
+  #hero h1{
+    font-size:clamp(2.6rem, 8vw, 4.4rem);
+    line-height:1.05;
+    margin:18px 0 20px;
+  }
+  #hero h1 em{
+    font-style:italic;
+    color:var(--gold-dust);
+  }
+  #hero .hero-sub{
+    color:var(--muted-rose);
+    font-size:1.05rem;
+    max-width:420px;
+  }
+  .scroll-hint{
+    margin-top:64px;
+    font-size:0.75rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--muted-rose);
+    animation:bob 2.2s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{transform:translateY(0);opacity:0.6;}
+    50%{transform:translateY(8px);opacity:1;}
+  }
+
+  /* ---------- Route / thread signature element ---------- */
+  .route-wrap{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:32px 0 8px;
+  }
+  .route-dot{
+    width:9px;height:9px;border-radius:50%;
+    background:var(--gold-dust);
+    flex-shrink:0;
+  }
+  .route-line{
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg, var(--gold-dust), var(--coral-ember));
+    position:relative;
+    overflow:hidden;
+  }
+  .route-line::after{
+    content:'';
+    position:absolute;inset:0;
+    background:var(--ink-wine);
+    transform:translateX(-100%);
+    animation:route-draw 1.8s ease forwards;
+    animation-delay:0.3s;
+  }
+  #hero .route-line::after{animation-play-state:paused;}
+  .reveal .route-line::after{animation-play-state:running;}
+  @keyframes route-draw{ to{transform:translateX(0);} }
+  .route-label{
+    font-size:0.72rem;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--muted-rose);
+  }
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal-target{
+    opacity:0;
+    transform:translateY(24px);
+    transition:opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal-target.in{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  /* ---------- Story ---------- */
+  #story .eyebrow{margin-bottom:14px;}
+  #story h2{font-size:clamp(1.8rem,5vw,2.4rem);margin-bottom:22px;}
+  #story p{
+    font-size:1.05rem;
+    line-height:1.75;
+    color:var(--cream-petal);
+    opacity:0.92;
+  }
+  #story p + p{margin-top:16px;}
+
+  /* ---------- Mr Gomora card ---------- */
+  #gomora{
+    display:flex;
+    justify-content:center;
+  }
+  .gomora-card{
+    background:linear-gradient(160deg, var(--deep-plum), var(--plum-soft));
+    border:1px solid rgba(232,178,77,0.25);
+    border-radius:18px;
+    padding:38px 32px;
+    max-width:520px;
+    text-align:center;
+    box-shadow:0 30px 60px rgba(0,0,0,0.35);
+  }
+  .gomora-card .eyebrow{color:var(--gold-dust);}
+  .gomora-card h3{
+    font-size:clamp(1.6rem,5vw,2.1rem);
+    margin:14px 0 16px;
+    font-style:italic;
+    color:var(--cream-petal);
+  }
+  .gomora-card p{
+    color:var(--muted-rose);
+    font-size:0.98rem;
+    line-height:1.7;
+  }
+  .gomora-badge{
+    display:inline-block;
+    margin-top:20px;
+    padding:6px 16px;
+    border:1px solid var(--gold-dust);
+    border-radius:999px;
+    font-size:0.72rem;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--gold-dust);
+  }
+
+  /* ---------- Letter ---------- */
+  #letter{
+    background:radial-gradient(ellipse at top, rgba(232,178,77,0.06), transparent 60%);
+  }
+  .letter-paper{
+    background:var(--deep-plum);
+    border-radius:4px 4px 18px 18px;
+    padding:44px 36px;
+    position:relative;
+    box-shadow:0 30px 70px rgba(0,0,0,0.4);
+  }
+  .letter-paper::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:5px;
+    background:linear-gradient(90deg, var(--coral-ember), var(--gold-dust));
+    border-radius:4px 4px 0 0;
+  }
+  .letter-paper p{
+    font-family:'Fraunces',serif;
+    font-size:1.12rem;
+    line-height:1.85;
+    color:var(--cream-petal);
+  }
+  .letter-paper p + p{margin-top:18px;}
+  .letter-sign{
+    margin-top:28px;
+    font-style:italic;
+    color:var(--gold-dust);
+    font-size:1.15rem;
+  }
+
+  /* ---------- Playlist ---------- */
+  #playlist .eyebrow{margin-bottom:14px;}
+  #playlist h2{font-size:clamp(1.8rem,5vw,2.2rem);margin-bottom:8px;}
+  #playlist .playlist-intro{color:var(--muted-rose);margin-bottom:32px;font-size:0.98rem;}
+  .track{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding:16px 4px;
+    border-bottom:1px solid rgba(247,232,217,0.1);
+    text-decoration:none;
+    color:inherit;
+    transition:padding-left 0.25s ease;
+  }
+  .track:hover{padding-left:8px;}
+  .track:first-child{
+    border-top:1px solid rgba(247,232,217,0.1);
+  }
+  .track-num{
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    color:var(--gold-dust);
+    font-size:0.95rem;
+    width:22px;
+    flex-shrink:0;
+  }
+  .track-info{flex:1;}
+  .track-title{font-weight:600;font-size:0.98rem;}
+  .track-artist{font-size:0.85rem;color:var(--muted-rose);margin-top:2px;}
+  .track-note{font-size:0.78rem;color:var(--muted-rose);font-style:italic;}
+  .track-lead .track-title{color:var(--gold-dust);}
+
+  /* ---------- Ask ---------- */
+  #ask{
+    text-align:center;
+    padding-top:100px;
+    padding-bottom:160px;
+  }
+  #ask .heart-mark{
+    font-size:1.6rem;
+    margin-bottom:18px;
+    display:inline-block;
+  }
+  #ask h2{
+    font-size:clamp(2.1rem,7vw,3rem);
+    line-height:1.15;
+    margin-bottom:44px;
+  }
+  .ask-buttons{
+    display:flex;
+    gap:20px;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    min-height:64px;
+  }
+  #yesBtn{
+    background:linear-gradient(135deg, var(--coral-ember), var(--gold-dust));
+    color:var(--ink-wine);
+    border:none;
+    padding:16px 38px;
+    border-radius:999px;
+    font-family:'Manrope',sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    cursor:pointer;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow:0 15px 35px rgba(255,107,74,0.35);
+  }
+  #yesBtn:hover{transform:scale(1.06);}
+  #noBtn{
+    background:transparent;
+    border:1px solid rgba(247,232,217,0.35);
+    color:var(--cream-petal);
+    padding:16px 32px;
+    border-radius:999px;
+    font-family:'Manrope',sans-serif;
+    font-weight:600;
+    font-size:1rem;
+    cursor:pointer;
+    position:relative;
+    transition:transform 0.15s ease;
+  }
+  .ask-hint{
+    margin-top:26px;
+    font-size:0.8rem;
+    color:var(--muted-rose);
+  }
+
+  /* ---------- Celebration ---------- */
+  #celebration{
+    position:fixed;
+    inset:0;
+    background:var(--ink-wine);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    z-index:90;
+    padding:24px;
+  }
+  #celebration.show{display:flex;}
+  #celebration h2{
+    font-size:clamp(2.4rem,9vw,4rem);
+    margin-bottom:14px;
+  }
+  #celebration p{
+    color:var(--muted-rose);
+    font-size:1.05rem;
+    max-width:380px;
+  }
+  .confetti{
+    position:absolute;
+    top:-10px;
+    border-radius:2px;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(540deg); opacity:0.9; }
+  }
+
+  footer{
+    text-align:center;
+    padding:50px 24px 70px;
+    font-size:0.78rem;
+    color:var(--muted-rose);
+    letter-spacing:0.05em;
+  }
+
+  @media (max-width:480px){
+    section{padding:90px 20px;}
+    .letter-paper{padding:32px 22px;}
+    .gomora-card{padding:30px 22px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Envelope intro -->
+<div id="envelope">
+  <div class="env-box" onclick="openEnvelope()">
+    <div class="seal">P</div>
+    <p class="envelope-label">For PYT</p>
+    <p class="envelope-sub">tap the seal to open</p>
+  </div>
+</div>
+
+<!-- Hero -->
+<section id="hero">
+  <p class="eyebrow">Akure &mdash; to wherever we end up</p>
+  <h1>You became my <em>whole world</em>,<br>one ordinary day at a time.</h1>
+  <p class="hero-sub">A short letter, a playlist, and a question. Scroll when you're ready.</p>
+  <div class="scroll-hint">↓ scroll</div>
+</section>
+
+<!-- Story -->
+<section id="story" class="reveal-target">
+  <p class="eyebrow">Where it started</p>
+  <h2>Akure</h2>
+  <p>It wasn't supposed to be a big day. Just Akure being Akure. And then somehow, you were in it &mdash; and nothing about how I saw the rest of my days stayed the same after that.</p>
+  <p>I don't think you know how often I think back to it. Not because it was dramatic or perfect, but because it was the beginning of the only story I actually want to keep writing.</p>
+</section>
+
+<!-- Mr Gomora -->
+<section id="gomora" class="reveal-target">
+  <div class="gomora-card">
+    <p class="eyebrow">A small confession</p>
+    <h3>You call me your Mr Gomora</h3>
+    <p>The one drama you never get tired of. The one you keep coming back to &mdash; episode after episode, season after season, even on the days it's a lot. I've decided I like that title more than any other one I could be given.</p>
+    <span class="gomora-badge">still your favourite episode</span>
+  </div>
+</section>
+
+<!-- Letter -->
+<section id="letter" class="reveal-target">
+  <p class="eyebrow">A letter, in writing</p>
+  <div class="letter-paper">
+    <p>PYT,</p>
+    <p>I keep thinking about Akure &mdash; how a completely normal day turned into the start of something I never planned for and wouldn't trade for anything. From that day, you carved out a whole room in my heart and just never left.</p>
+    <p>You're my Mr Gomora &mdash; the one story I never get tired of. Silly to say, maybe. But it's the truest thing I know.</p>
+    <p>You mean the whole world to me. Not a part of it, not a corner of it &mdash; all of it. And I love you endlessly, in every sense of that word.</p>
+    <p>So here's me, finally saying it properly, in writing, where I can't chicken out halfway through.</p>
+    <p class="letter-sign">&mdash; Yours, endlessly</p>
+  </div>
+</section>
+
+<!-- Playlist -->
+<section id="playlist" class="reveal-target">
+  <p class="eyebrow">Our soundtrack</p>
+  <h2>Play this while you read it again</h2>
+  <p class="playlist-intro">Starting with the one that's basically become our song.</p>
+
+  <a class="track track-lead" href="https://open.spotify.com/search/Dearly%20Wande%20Coal%20Qing%20Madi" target="_blank" rel="noopener">
+    <span class="track-num">01</span>
+    <span class="track-info">
+      <div class="track-title">Dearly</div>
+      <div class="track-artist">Wande Coal ft. Qing Madi</div>
+    </span>
+    <span class="track-note">ours</span>
+  </a>
+  <a class="track" href="https://open.spotify.com/search/Essence%20Wizkid%20Tems" target="_blank" rel="noopener">
+    <span class="track-num">02</span>
+    <span class="track-info">
+      <div class="track-title">Essence</div>
+      <div class="track-artist">Wizkid ft. Tems</div>
+    </span>
+  </a>
+  <a class="track" href="https://open.spotify.com/search/Skin%20Tight%20Adekunle%20Gold%20Simi" target="_blank" rel="noopener">
+    <span class="track-num">03</span>
+    <span class="track-info">
+      <div class="track-title">Skin Tight</div>
+      <div class="track-artist">Adekunle Gold ft. Simi</div>
+    </span>
+  </a>
+  <a class="track" href="https://open.spotify.com/search/Love%20Nwantiti%20CKay" target="_blank" rel="noopener">
+    <span class="track-num">04</span>
+    <span class="track-info">
+      <div class="track-title">Love Nwantiti</div>
+      <div class="track-artist">CKay</div>
+    </span>
+  </a>
+  <a class="track" href="https://open.spotify.com/search/Confident%20Ric%20Hassani" target="_blank" rel="noopener">
+    <span class="track-num">05</span>
+    <span class="track-info">
+      <div class="track-title">Confident</div>
+      <div class="track-artist">Ric Hassani</div>
+    </span>
+  </a>
+</section>
+
+<!-- Ask -->
+<section id="ask" class="reveal-target">
+  <div class="heart-mark">❤</div>
+  <h2>So, PYT &mdash;<br>will you be my girlfriend?</h2>
+  <div class="ask-buttons">
+    <button id="yesBtn" onclick="sayYes()">Yes, obviously</button>
+    <button id="noBtn" onmouseover="dodge()" ontouchstart="dodge()">No</button>
+  </div>
+  <p class="ask-hint">the other button doesn't really work, just so you know</p>
+</section>
+
+<footer>made in Akure, for the both of us</footer>
+
+<!-- Celebration -->
+<div id="celebration">
+  <h2>She said yes 😌❤️</h2>
+  <p>Endlessly, from here. Go press play on Dearly &mdash; this one's ours now.</p>
+</div>
+
+<script>
+  function openEnvelope(){
+    document.getElementById('envelope').classList.add('hidden');
+    document.getElementById('hero').classList.add('reveal');
+  }
+
+  // Scroll reveal
+  const targets = document.querySelectorAll('.reveal-target');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:0.15});
+  targets.forEach(t=>io.observe(t));
+
+  // Dodging No button
+  function dodge(){
+    const btn = document.getElementById('noBtn');
+    const wrap = btn.closest('.ask-buttons');
+    const wrapRect = wrap.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+    const maxX = Math.max(wrapRect.width - btnRect.width, 40);
+    const maxY = 120;
+    const x = (Math.random() - 0.5) * maxX;
+    const y = (Math.random() - 0.5) * maxY;
+    btn.style.position = 'relative';
+    btn.style.transform = `translate(${x}px, ${y}px)`;
+  }
+
+  function sayYes(){
+    const celebration = document.getElementById('celebration');
+    celebration.classList.add('show');
+    launchConfetti();
+  }
+
+  function launchConfetti(){
+    const colors = ['#E8B24D', '#FF6B4A', '#F7E8D9', '#C98BA0'];
+    for(let i=0;i<80;i++){
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      c.style.left = Math.random()*100 + 'vw';
+      c.style.width = c.style.height = (Math.random()*6+5) + 'px';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDuration = (Math.random()*2+2.5) + 's';
+      c.style.animationDelay = (Math.random()*0.6) + 's';
+      document.getElementById('celebration').appendChild(c);
+      setTimeout(()=>c.remove(), 5500);
+    }
+  }
+</script>
+</body>
+</html>
